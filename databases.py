@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 __author__ = 'lvxin'
 
-engine = create_engine('sqlite://thrones.db', convert_unicode=True)
+engine = create_engine('sqlite:///thrones.db', convert_unicode=True)
 
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,

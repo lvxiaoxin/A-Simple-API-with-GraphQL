@@ -20,10 +20,10 @@ __author__ = 'lvxin'
 class Families(SQLAlchemyObjectType):
     class Meta:
         model = FamiliesModel
-        interface = (relay.Node,)
+        interfaces = (relay.Node,)
 
 
-class FamiliesConnection(SQLAlchemyConnectionField):
+class FamiliesConnections(relay.Connection):
     class Meta:
         node = Families
 
@@ -31,10 +31,10 @@ class FamiliesConnection(SQLAlchemyConnectionField):
 class Members(SQLAlchemyObjectType):
     class Meta:
         model = MembersModel
-        interface = (relay.Node,)
+        interfaces = (relay.Node,)
 
 
-class MembersConnection(SQLAlchemyConnectionField):
+class MembersConnections(relay.Connection):
     class Meta:
         node = Members
 
@@ -50,7 +50,7 @@ class CreateMember(graphene.Mutation):
 
     @classmethod
     def mutate(cls, _, args, context, info):
-        member = Members(name=args.get('name'), gender=args.get('gender'), families_id=args.get('families_id'))
+        member = MembersModel(name=args.get('name'), gender=args.get('gender'), families_id=args.get('families_id'))
         db_session.add(member)
         db_session.commit()
         ok = True
@@ -61,13 +61,14 @@ class CreateFamily(graphene.Mutation):
     class Input:
         name = graphene.String()
         rank = graphene.Int()
+        house = graphene.String()
 
     ok = graphene.Boolean()
     family = graphene.Field(Families)
 
     @classmethod
     def mutate(cls, _, args, context, info):
-        family = Families(name=args.get('name'), rank=args.get('rank'))
+        family = FamiliesModel(name=args.get('name'), rank=args.get('rank'), house=args.get('house'))
         db_session.add(family)
         db_session.commit()
         ok = True
@@ -81,9 +82,23 @@ class MyMutations(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    all_members = SQLAlchemyConnectionField(MembersConnection)
-    all_families = SQLAlchemyConnectionField(FamiliesConnection)
+    members = SQLAlchemyConnectionField(Members)
+    families = SQLAlchemyConnectionField(Families)
+    all_members = SQLAlchemyConnectionField(MembersConnections)
+    all_families = SQLAlchemyConnectionField(FamiliesConnections)
+    find_member = graphene.Field(lambda: Members, name=graphene.String())
+    find_family = graphene.Field(lambda: Families, name=graphene.String())
+
+    def resolve_find_member(self, args, context, info):
+        query = Members.get_query(context)
+        name = args.get('name')
+        return query.filter(MembersModel.name == name).first()
+
+    def resolve_find_family(self, args, context, info):
+        query = Families.get_query(context)
+        name = args.get('name')
+        return query.filter(FamiliesModel.name == name).first()
 
 
-schema = graphene.Schema(query=Query, mutation=MyMutations, types=[Families, Members])
-
+schema = graphene.Schema(query=Query, mutation=MyMutations,
+                         types=[Families, Members, FamiliesConnections, MembersConnections])

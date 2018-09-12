@@ -22,7 +22,11 @@ app.debug = True
 app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
 
-@app.teardown_appcontext
+@app.route('/')
+def index():
+    return "Go to /graphql"
+
+
 def shutdown_session(exception=None):
     db_session.remove()
 

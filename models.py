@@ -18,6 +18,7 @@ class Families(Base):
     __tablename__ = 'families'
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
+    house = Column(String(255))
     rank = Column(Integer)
 
 
