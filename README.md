@@ -24,7 +24,7 @@ then you can go to *http://127.0.0.1:5000/graphql* to have a try.
 
 > Get all members
 
-```json
+```
     {
       allMembers {
         edges {
@@ -44,7 +44,7 @@ then you can go to *http://127.0.0.1:5000/graphql* to have a try.
 
 > Create a Family
 
-```json
+```
     mutation {
       createFamily(name: "Stark", rank: "1", house: "Winterfell") {
         family {
@@ -60,7 +60,7 @@ then you can go to *http://127.0.0.1:5000/graphql* to have a try.
 
 > Find a Specific Member
 
-```json
+```
     {
       findMember(name: "Arya Stark") {
         name
