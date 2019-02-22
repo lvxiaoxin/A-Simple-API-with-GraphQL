@@ -16,7 +16,7 @@ The background is based on **The Game of Throne**.
 
 To run the project, just clone the project and run:
 
-> python server
+> python server.py
 
 then you can go to *http://127.0.0.1:5000/graphql* to have a try.
 
